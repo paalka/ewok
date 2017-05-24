@@ -10,7 +10,7 @@ type Feed struct {
 	FeedUrl       string
 }
 
-func ReadFeed(feed Feed, fp *gofeed.Parser, ch chan Feed, chFinished chan bool) {
+func ReadFeed(feed Feed, fp *gofeed.Parser, ch chan<- Feed, chFinished chan<- bool) {
 	rssFeed, err := fp.ParseURL(feed.FeedUrl)
 
 	if err != nil {
