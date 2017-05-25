@@ -14,7 +14,12 @@ func ReadFeed(f feed.RSSFeed, fp *gofeed.Parser, ch chan<- feed.RSSFeed, chFinis
 	}
 
 	if rssFeed != nil {
-		ch <- feed.RSSFeed{LastUpdated: rssFeed.Items[0].Published, Url: f.Url}
+		feedLastUpdated := rssFeed.Updated
+		if feedLastUpdated == "" && len(rssFeed.Items) > 0 {
+			feedLastUpdated = rssFeed.Items[0].Published
+		}
+
+		ch <- feed.RSSFeed{LastUpdated: feedLastUpdated, Url: f.Url}
 	}
 
 	chFinished <- true
