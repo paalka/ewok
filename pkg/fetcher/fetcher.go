@@ -3,7 +3,7 @@ package fetcher
 import (
 	"fmt"
 	"github.com/mmcdole/gofeed"
-	"github.com/paalka/rss/pkg/feed"
+	"github.com/paalka/ewok/pkg/feed"
 )
 
 func ReadFeed(f feed.RSSFeed, fp *gofeed.Parser, ch chan<- feed.RSSFeed, chFinished chan<- bool) {
