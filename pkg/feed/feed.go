@@ -2,7 +2,12 @@ package feed
 
 import (
 	"database/sql"
+	"fmt"
+	"github.com/mmcdole/gofeed"
+	"time"
 )
+
+const timeLayout string = "Mon, 02 Jan 2006 15:04:05 -0700"
 
 type RSSFeed struct {
 	Title       string
@@ -29,3 +34,13 @@ func GetFeeds(db *sql.DB) []RSSFeed {
 
 	return feeds
 }
+
+func parseLastUpdated(timeString string) time.Time {
+	t, err := time.Parse(timeLayout, timeString)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	return t
+}
+
