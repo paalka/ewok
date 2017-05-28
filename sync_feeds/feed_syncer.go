@@ -18,8 +18,8 @@ func main() {
 	SyncFeeds(db, feeds)
 }
 
-func SyncFeeds(db *sql.DB, feeds []feed.RSSFeed) {
-	messages := make(chan feed.RSSFeed)
+func SyncFeeds(db *sql.DB, feeds []feed.EwokFeed) {
+	messages := make(chan feed.EwokFeed)
 	feedFinished := make(chan bool)
 
 	fp := gofeed.NewParser()
@@ -30,7 +30,7 @@ func SyncFeeds(db *sql.DB, feeds []feed.RSSFeed) {
 	for c := 0; c < len(feeds); {
 		select {
 		case f := <-messages:
-			fmt.Println(f.LastUpdated)
+			fmt.Println(f.Updated)
 		case <-feedFinished:
 			c++
 		}

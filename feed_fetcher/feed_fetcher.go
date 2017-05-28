@@ -7,11 +7,11 @@ import (
 	"github.com/paalka/ewok/feed"
 )
 
-func FetchFeed(db *sql.DB, f feed.RSSFeed, fp *gofeed.Parser, ch chan<- feed.RSSFeed, chFinished chan<- bool) {
-	rssFeed, err := fp.ParseURL(f.Url)
+func FetchFeed(db *sql.DB, f feed.EwokFeed, fp *gofeed.Parser, ch chan<- feed.EwokFeed, chFinished chan<- bool) {
+	rssFeed, err := fp.ParseURL(f.Link)
 
 	if err != nil {
-		fmt.Printf("%s %s", err, f.Url)
+		fmt.Printf("%s %s", err, f.Link)
 	}
 
 	if rssFeed != nil {
@@ -20,9 +20,9 @@ func FetchFeed(db *sql.DB, f feed.RSSFeed, fp *gofeed.Parser, ch chan<- feed.RSS
 			feedLastUpdated = rssFeed.Items[0].Published
 		}
 
-		feed.UpdateItems(db, f.Id, rssFeed, feedLastUpdated, f.LastUpdated)
+		feed.UpdateItems(db, f.Id, rssFeed, feedLastUpdated, f.Updated)
 
-		ch <- feed.RSSFeed{Title: f.Title, LastUpdated: feedLastUpdated, Url: f.Url}
+		ch <- feed.EwokFeed{&gofeed.Feed{Title: f.Title, Updated: feedLastUpdated, Link: f.Link}, f.Id}
 	}
 
 	chFinished <- true

@@ -10,11 +10,9 @@ import (
 const timeLayoutRSS string = time.RFC1123Z
 const timeLayoutPSQL string = time.RFC3339
 
-type RSSFeed struct {
-	Id          uint
-	Title       string
-	Url         string
-	LastUpdated string
+type EwokFeed struct {
+	*gofeed.Feed
+	Id uint
 }
 
 type FeedItem struct {
@@ -24,17 +22,17 @@ type FeedItem struct {
 	Published   string
 }
 
-func GetFeeds(db *sql.DB) []RSSFeed {
+func GetFeeds(db *sql.DB) []EwokFeed {
 	rows, err := db.Query("SELECT id, title, url, last_updated FROM rss.rss_feed")
 
 	if err != nil {
 		panic(err)
 	}
 
-	var feeds []RSSFeed
+	var feeds []EwokFeed
 	for rows.Next() {
-		var f RSSFeed
-		err = rows.Scan(&f.Id, &f.Title, &f.Url, &f.LastUpdated)
+		f := EwokFeed{&gofeed.Feed{}, 0}
+		err = rows.Scan(&f.Id, &f.Title, &f.Link, &f.Updated)
 		if err != nil {
 			panic(err)
 		}
@@ -53,7 +51,7 @@ func parseLastUpdated(timeLayout string, timeString string) time.Time {
 	return t
 }
 
-func UpdateItems(db *sql.DB, feedId uint, feed *gofeed.Feed, newLastUpdated string, prevLastUpdated string) {
+func UpdateItems(db *sql.DB, feed EwokFeed, newLastUpdated string, prevLastUpdated string) {
 	newLastUpdatedTime := parseLastUpdated(timeLayoutRSS, newLastUpdated)
 	prevLastUpdatedTime := parseLastUpdated(timeLayoutPSQL, prevLastUpdated)
 
