@@ -1,10 +1,10 @@
-package fetcher
+package feed_fetcher
 
 import (
 	"database/sql"
 	"fmt"
 	"github.com/mmcdole/gofeed"
-	"github.com/paalka/ewok/pkg/feed"
+	"github.com/paalka/ewok/feed"
 )
 
 func FetchFeed(db *sql.DB, f feed.RSSFeed, fp *gofeed.Parser, ch chan<- feed.RSSFeed, chFinished chan<- bool) {
