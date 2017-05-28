@@ -7,7 +7,8 @@ import (
 	"time"
 )
 
-const timeLayout string = "Mon, 02 Jan 2006 15:04:05 -0700"
+const timeLayoutRSS string = time.RFC1123Z
+const timeLayoutPSQL string = time.RFC3339
 
 type RSSFeed struct {
 	Title       string
@@ -35,7 +36,7 @@ func GetFeeds(db *sql.DB) []RSSFeed {
 	return feeds
 }
 
-func parseLastUpdated(timeString string) time.Time {
+func parseLastUpdated(timeLayout string, timeString string) time.Time {
 	t, err := time.Parse(timeLayout, timeString)
 	if err != nil {
 		fmt.Println(err)
