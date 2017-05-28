@@ -49,6 +49,26 @@ func UpdateFeedFromDiff(db *sql.DB, feedDiff EwokFeed) {
 	tx.Commit()
 }
 
+func GetAllFeedItems(db *sql.DB) []gofeed.Item {
+	rows, err := db.Query("SELECT title, link, description, publish_date FROM rss.rss_item ORDER BY publish_date DESC")
+
+	if err != nil {
+		panic(err)
+	}
+
+	var feedItems []gofeed.Item
+	for rows.Next() {
+		var item gofeed.Item
+		err = rows.Scan(&item.Title, &item.Link, &item.Description, &item.Published)
+		if err != nil {
+			panic(err)
+		}
+		feedItems = append(feedItems, item)
+	}
+
+	return feedItems
+}
+
 func GetFeeds(db *sql.DB) []EwokFeed {
 	rows, err := db.Query("SELECT id, title, url, last_updated FROM rss.rss_feed")
 
