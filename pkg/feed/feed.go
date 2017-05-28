@@ -17,6 +17,13 @@ type RSSFeed struct {
 	LastUpdated string
 }
 
+type FeedItem struct {
+	Title       string
+	Link        string
+	Description string
+	Published   string
+}
+
 func GetFeeds(db *sql.DB) []RSSFeed {
 	rows, err := db.Query("SELECT id, title, url, last_updated FROM rss.rss_feed")
 
