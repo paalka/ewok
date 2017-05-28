@@ -15,11 +15,38 @@ type EwokFeed struct {
 	Id uint
 }
 
-type FeedItem struct {
-	Title       string
-	Link        string
-	Description string
-	Published   string
+func UpdateFeedFromDiff(db *sql.DB, feedDiff EwokFeed) {
+	tx, err := db.Begin()
+	if err != nil {
+		panic(err)
+	}
+
+	ins_stmt, err := db.Prepare("INSERT INTO rss.rss_item (title, description, link, publish_date) VALUES ($1, $2, $3, $4)")
+	if err != nil {
+		panic(err)
+	}
+
+	for _, item := range feedDiff.Items {
+		_, err := tx.Stmt(ins_stmt).Exec(item.Title, item.Description, item.Link, item.Published)
+		if err != nil {
+			tx.Rollback()
+			panic(err)
+		}
+	}
+
+	update_feed_stmt, err := db.Prepare("UPDATE rss.rss_feed SET last_updated = $1 WHERE id = $2")
+	if err != nil {
+		tx.Rollback()
+		panic(err)
+	}
+
+	_, err = tx.Stmt(update_feed_stmt).Exec(feedDiff.Updated, feedDiff.Id)
+	if err != nil {
+		tx.Rollback()
+		panic(err)
+	}
+
+	tx.Commit()
 }
 
 func GetFeeds(db *sql.DB) []EwokFeed {
@@ -51,7 +78,7 @@ func parseLastUpdated(timeLayout string, timeString string) time.Time {
 	return t
 }
 
-func UpdateItems(db *sql.DB, newFeed *gofeed.Feed, oldFeed EwokFeed) {
+func GetNewItems(db *sql.DB, newFeed *gofeed.Feed, oldFeed EwokFeed) ([]*gofeed.Item, string) {
 	newFeedLastUpdated := newFeed.Updated
 	if newFeedLastUpdated == "" && len(newFeed.Items) > 0 {
 		newFeedLastUpdated = newFeed.Items[0].Published
@@ -59,41 +86,15 @@ func UpdateItems(db *sql.DB, newFeed *gofeed.Feed, oldFeed EwokFeed) {
 	newLastUpdatedTime := parseLastUpdated(timeLayoutRSS, newFeedLastUpdated)
 	oldLastUpdatedTime := parseLastUpdated(timeLayoutPSQL, oldFeed.Updated)
 
-	if newLastUpdatedTime.Before(oldLastUpdatedTime) {
-		return
-	}
+	var newItems []*gofeed.Item
 
-	tx, err := db.Begin()
-	if err != nil {
-		panic(err)
-	}
-
-	ins_stmt, err := db.Prepare("INSERT INTO rss.rss_item (title, description, link, publish_date) VALUES ($1, $2, $3, $4)")
-	if err != nil {
-		panic(err)
-	}
-
-	for _, item := range newFeed.Items {
-		if item.PublishedParsed != nil && item.PublishedParsed.After(oldLastUpdatedTime) {
-			_, err := tx.Stmt(ins_stmt).Exec(item.Title, item.Description, item.Link, item.Published)
-
-			if err != nil {
-				tx.Rollback()
-				panic(err)
+	if newLastUpdatedTime.After(oldLastUpdatedTime) {
+		for _, item := range newFeed.Items {
+			if item.PublishedParsed != nil && item.PublishedParsed.After(oldLastUpdatedTime) {
+				newItems = append(newItems, item)
 			}
 		}
 	}
 
-	update_feed_stmt, err := db.Prepare("UPDATE rss.rss_feed SET last_updated = $1 WHERE id = $2")
-	if err != nil {
-		tx.Rollback()
-		panic(err)
-	}
-
-	_, err = tx.Stmt(update_feed_stmt).Exec(newFeedLastUpdated, oldFeed.Id)
-	if err != nil {
-		tx.Rollback()
-		panic(err)
-	}
-	tx.Commit()
+	return newItems, newFeedLastUpdated
 }
