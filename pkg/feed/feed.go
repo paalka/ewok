@@ -46,3 +46,45 @@ func parseLastUpdated(timeLayout string, timeString string) time.Time {
 	return t
 }
 
+func UpdateItems(db *sql.DB, feedId uint, feed *gofeed.Feed, newLastUpdated string, prevLastUpdated string) {
+	newLastUpdatedTime := parseLastUpdated(timeLayoutRSS, newLastUpdated)
+	prevLastUpdatedTime := parseLastUpdated(timeLayoutPSQL, prevLastUpdated)
+
+	if newLastUpdatedTime.Before(prevLastUpdatedTime) {
+		return
+	}
+
+	tx, err := db.Begin()
+	if err != nil {
+		panic(err)
+	}
+
+	ins_stmt, err := db.Prepare("INSERT INTO rss.rss_item (title, description, link, publish_date) VALUES ($1, $2, $3, $4)")
+	if err != nil {
+		panic(err)
+	}
+
+	for _, item := range feed.Items {
+		if item.PublishedParsed != nil && item.PublishedParsed.After(prevLastUpdatedTime) {
+			_, err := tx.Stmt(ins_stmt).Exec(item.Title, item.Description, item.Link, item.Published)
+
+			if err != nil {
+				tx.Rollback()
+				panic(err)
+			}
+		}
+	}
+
+	update_feed_stmt, err := db.Prepare("UPDATE rss.rss_feed SET last_updated = $1 WHERE id = $2")
+	if err != nil {
+		tx.Rollback()
+		panic(err)
+	}
+
+	_, err = tx.Stmt(update_feed_stmt).Exec(newLastUpdated, feedId)
+	if err != nil {
+		tx.Rollback()
+		panic(err)
+	}
+	tx.Commit()
+}
