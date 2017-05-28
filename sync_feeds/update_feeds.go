@@ -21,10 +21,10 @@ func fetchNewFeedItems(db *sql.DB, oldFeed feed.EwokFeed, fp *gofeed.Parser, fee
 	newFeed, err := fp.ParseURL(oldFeed.Link)
 
 	if err != nil {
+		// Just show the error and return if we for some reason was not able
+		// to fetch the feed.
 		fmt.Printf("%s %s", err, oldFeed.Link)
-	}
-
-	if newFeed != nil {
+	} else if newFeed != nil {
 		newItems, newFeedLastUpdated := feed.GetNewItems(db, newFeed, oldFeed)
 		feedDiffsCh <- feed.EwokFeed{&gofeed.Feed{Updated: newFeedLastUpdated, Items: newItems}, oldFeed.Id}
 	}
