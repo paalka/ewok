@@ -51,11 +51,15 @@ func parseLastUpdated(timeLayout string, timeString string) time.Time {
 	return t
 }
 
-func UpdateItems(db *sql.DB, feed EwokFeed, newLastUpdated string, prevLastUpdated string) {
-	newLastUpdatedTime := parseLastUpdated(timeLayoutRSS, newLastUpdated)
-	prevLastUpdatedTime := parseLastUpdated(timeLayoutPSQL, prevLastUpdated)
+func UpdateItems(db *sql.DB, newFeed *gofeed.Feed, oldFeed EwokFeed) {
+	newFeedLastUpdated := newFeed.Updated
+	if newFeedLastUpdated == "" && len(newFeed.Items) > 0 {
+		newFeedLastUpdated = newFeed.Items[0].Published
+	}
+	newLastUpdatedTime := parseLastUpdated(timeLayoutRSS, newFeedLastUpdated)
+	oldLastUpdatedTime := parseLastUpdated(timeLayoutPSQL, oldFeed.Updated)
 
-	if newLastUpdatedTime.Before(prevLastUpdatedTime) {
+	if newLastUpdatedTime.Before(oldLastUpdatedTime) {
 		return
 	}
 
@@ -69,8 +73,8 @@ func UpdateItems(db *sql.DB, feed EwokFeed, newLastUpdated string, prevLastUpdat
 		panic(err)
 	}
 
-	for _, item := range feed.Items {
-		if item.PublishedParsed != nil && item.PublishedParsed.After(prevLastUpdatedTime) {
+	for _, item := range newFeed.Items {
+		if item.PublishedParsed != nil && item.PublishedParsed.After(oldLastUpdatedTime) {
 			_, err := tx.Stmt(ins_stmt).Exec(item.Title, item.Description, item.Link, item.Published)
 
 			if err != nil {
@@ -86,7 +90,7 @@ func UpdateItems(db *sql.DB, feed EwokFeed, newLastUpdated string, prevLastUpdat
 		panic(err)
 	}
 
-	_, err = tx.Stmt(update_feed_stmt).Exec(newLastUpdated, feedId)
+	_, err = tx.Stmt(update_feed_stmt).Exec(newFeedLastUpdated, oldFeed.Id)
 	if err != nil {
 		tx.Rollback()
 		panic(err)
