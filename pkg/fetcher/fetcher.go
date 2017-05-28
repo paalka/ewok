@@ -6,7 +6,7 @@ import (
 	"github.com/paalka/ewok/pkg/feed"
 )
 
-func ReadFeed(f feed.RSSFeed, fp *gofeed.Parser, ch chan<- feed.RSSFeed, chFinished chan<- bool) {
+func FetchFeed(f feed.RSSFeed, fp *gofeed.Parser, ch chan<- feed.RSSFeed, chFinished chan<- bool) {
 	rssFeed, err := fp.ParseURL(f.Url)
 
 	if err != nil {
