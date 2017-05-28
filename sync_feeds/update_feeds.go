@@ -14,7 +14,7 @@ func main() {
 	db := db.GetDatabaseConnection(config.DB_NAME, config.DB_USER, config.DB_PASS)
 
 	feeds := feed.GetFeeds(db)
-	SyncFeeds(db, feeds)
+	syncFeeds(db, feeds)
 }
 
 func fetchNewFeedItems(db *sql.DB, oldFeed feed.EwokFeed, fp *gofeed.Parser, feedDiffsCh chan<- feed.EwokFeed, chFinished chan<- bool) {
@@ -32,7 +32,7 @@ func fetchNewFeedItems(db *sql.DB, oldFeed feed.EwokFeed, fp *gofeed.Parser, fee
 	chFinished <- true
 }
 
-func SyncFeeds(db *sql.DB, feeds []feed.EwokFeed) {
+func syncFeeds(db *sql.DB, feeds []feed.EwokFeed) {
 	feedDiffsCh := make(chan feed.EwokFeed)
 	feedFinished := make(chan bool)
 
