@@ -89,7 +89,7 @@ func GetFeeds(db *sql.DB) []EwokFeed {
 	return feeds
 }
 
-func parseLastUpdated(timeLayout string, timeString string) time.Time {
+func ParseTime(timeLayout string, timeString string) time.Time {
 	t, err := time.Parse(timeLayout, timeString)
 	if err != nil {
 		fmt.Println(err)
@@ -103,8 +103,8 @@ func GetNewItems(db *sql.DB, newFeed *gofeed.Feed, oldFeed EwokFeed) ([]*gofeed.
 	if newFeedLastUpdated == "" && len(newFeed.Items) > 0 {
 		newFeedLastUpdated = newFeed.Items[0].Published
 	}
-	newLastUpdatedTime := parseLastUpdated(timeLayoutRSS, newFeedLastUpdated)
-	oldLastUpdatedTime := parseLastUpdated(timeLayoutPSQL, oldFeed.Updated)
+	newLastUpdatedTime := ParseTime(timeLayoutRSS, newFeedLastUpdated)
+	oldLastUpdatedTime := ParseTime(timeLayoutPSQL, oldFeed.Updated)
 
 	var newItems []*gofeed.Item
 
