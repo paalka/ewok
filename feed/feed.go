@@ -3,6 +3,7 @@ package feed
 import (
 	"database/sql"
 	"fmt"
+	"github.com/jaytaylor/html2text"
 	"github.com/mmcdole/gofeed"
 	"time"
 )
@@ -27,7 +28,12 @@ func UpdateFeedFromDiff(db *sql.DB, feedDiff EwokFeed) {
 	}
 
 	for _, item := range feedDiff.Items {
-		_, err := tx.Stmt(ins_stmt).Exec(item.Title, item.Description, item.Link, item.Published)
+		strippedText, err := html2text.FromString(item.Description)
+		if err != nil {
+			panic(err)
+		}
+
+		_, err = tx.Stmt(ins_stmt).Exec(item.Title, strippedText, item.Link, item.Published)
 		if err != nil {
 			tx.Rollback()
 			panic(err)
