@@ -8,16 +8,19 @@ import (
 	"net/http"
 )
 
+func renderTemplate(w http.ResponseWriter, templates *template.Template, tmpl_name string, data interface{}) {
+	err := templates.ExecuteTemplate(w, tmpl_name+".html", data)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
 func makeIndexHandler(config config.Config, templates *template.Template) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		db := db.GetDatabaseConnection(config.DB_NAME, config.DB_USER, config.DB_PASS)
 
 		feedItems := feed.GetAllFeedItems(db)
-
-		err := templates.ExecuteTemplate(w, "index.html", feedItems)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
+		renderTemplate(w, templates, "index", feedItems)
 	}
 }
 
