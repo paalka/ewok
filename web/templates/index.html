@@ -12,10 +12,12 @@
 <body>
   <div class="container">
     {{ range . }}
-    <div class="row item">
+    <div class="row">
+      <div class="eight columns item">
         <p class="item-publish-date">{{ .Published }}</p>
-          <a class="item-link" href="{{ .Link }}" target="_blank">{{ .Title }}</a>
-        <p>{{ .Description }}</p>
+        <a class="item-link" href="{{ .Link }}" target="_blank">{{ .Title }}</a>
+        <p class="item-description">{{ .Description }}</p>
+      </div>
     </div> <!-- end row -->
     {{ end }}
   </div> <!-- end container -->

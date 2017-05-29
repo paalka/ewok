@@ -1,7 +1,33 @@
-.item-link {
-  text-decoration: none;
+body {
+  font-samily: Times, serif;
 }
 
 .item-publish-date {
   font-size: 11px;
+}
+
+.item {
+  padding-bottom: 35px;
+}
+
+.item-link {
+  font-samily: Arial, sans-serif;
+  font-size: 20px;
+  text-decoration: none;
+  color: #097558
+}
+
+.item-link:hover {
+  color: #212121;
+}
+
+.item-description {
+  font-size: 14px;
+  color: #4c4c4c;
+  margin-top: 5px;
+}
+
+.item-publish-date {
+  color: #717171;
+  margin: 0;
 }
