@@ -22,7 +22,7 @@ func UpdateFeedFromDiff(db *sql.DB, feedDiff EwokFeed) {
 		panic(err)
 	}
 
-	ins_stmt, err := db.Prepare("INSERT INTO rss.rss_item (title, description, link, publish_date) VALUES ($1, $2, $3, $4)")
+	ins_stmt, err := db.Prepare("INSERT INTO rss_item (title, description, link, publish_date) VALUES ($1, $2, $3, $4)")
 	if err != nil {
 		panic(err)
 	}
@@ -40,7 +40,7 @@ func UpdateFeedFromDiff(db *sql.DB, feedDiff EwokFeed) {
 		}
 	}
 
-	update_feed_stmt, err := db.Prepare("UPDATE rss.rss_feed SET last_updated = $1 WHERE id = $2")
+	update_feed_stmt, err := db.Prepare("UPDATE rss_feed SET last_updated = $1 WHERE id = $2")
 	if err != nil {
 		tx.Rollback()
 		panic(err)
@@ -56,7 +56,7 @@ func UpdateFeedFromDiff(db *sql.DB, feedDiff EwokFeed) {
 }
 
 func GetAllFeedItems(db *sql.DB) []gofeed.Item {
-	rows, err := db.Query("SELECT title, link, description, publish_date FROM rss.rss_item ORDER BY publish_date DESC")
+	rows, err := db.Query("SELECT title, link, description, publish_date FROM rss_item ORDER BY publish_date DESC")
 
 	if err != nil {
 		panic(err)
@@ -77,7 +77,7 @@ func GetAllFeedItems(db *sql.DB) []gofeed.Item {
 }
 
 func GetFeeds(db *sql.DB) []EwokFeed {
-	rows, err := db.Query("SELECT id, title, url, last_updated FROM rss.rss_feed")
+	rows, err := db.Query("SELECT id, title, url, last_updated FROM rss_feed")
 
 	if err != nil {
 		panic(err)

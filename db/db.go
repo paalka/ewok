@@ -8,7 +8,7 @@ import (
 )
 
 func GetDatabaseConnection(databaseName string, user string, password string) *sql.DB {
-	psqlString := fmt.Sprintf("dbname=%s user=%s password=%s", databaseName, user, password)
+	psqlString := fmt.Sprintf("dbname=%s user=%s password=%s options='-c search_path=rss'", databaseName, user, password)
 	db, err := sql.Open("postgres", psqlString)
 
 	if err != nil {
