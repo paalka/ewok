@@ -26,7 +26,7 @@ func makeIndexHandler(config config.Config, templates *template.Template) http.H
 
 func main() {
 	config := config.LoadConfig("config.json")
-	templates := template.Must(template.ParseFiles("templates/index.html"))
+	templates := template.Must(template.ParseFiles("web/templates/index.html"))
 
 	http.HandleFunc("/", makeIndexHandler(config, templates))
 	err := http.ListenAndServe(":8000", nil)
