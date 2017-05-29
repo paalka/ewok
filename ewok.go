@@ -29,5 +29,8 @@ func main() {
 	templates := template.Must(template.ParseFiles("templates/index.html"))
 
 	http.HandleFunc("/", makeIndexHandler(config, templates))
-	http.ListenAndServe(":8000", nil)
+	err := http.ListenAndServe(":8000", nil)
+	if err != nil {
+		panic(err)
+	}
 }
