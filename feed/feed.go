@@ -63,6 +63,7 @@ func GetAllFeedItems(db *sql.DB) []gofeed.Item {
 		if err != nil {
 			panic(err)
 		}
+		item.Published = ParseTime(timeLayoutPSQL, item.Published).Format(time.RFC1123)
 		feedItems = append(feedItems, item)
 	}
 
