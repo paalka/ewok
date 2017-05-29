@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	config := config.LoadConfig("../config.json")
+	config := config.LoadJsonConfig("../config.json")
 	db := db.GetDatabaseConnection(config.DB_NAME, config.DB_USER, config.DB_PASS)
 
 	feeds := feed.GetFeeds(db)

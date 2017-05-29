@@ -12,7 +12,7 @@ type Config struct {
 	DB_NAME string
 }
 
-func LoadConfig(configFilename string) Config {
+func LoadJsonConfig(configFilename string) Config {
 	file, _ := os.Open(configFilename)
 	decoder := json.NewDecoder(file)
 	config := Config{}
