@@ -2,6 +2,8 @@
 
 Ewok is a minimalistic RSS aggregator.
 
+[Live demo](https://rss.128.no/)
+
 ### Requirements
 * A postgres server (tested on 9.6.3)
 
