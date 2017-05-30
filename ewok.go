@@ -1,6 +1,8 @@
 package main
 
 import (
+	"flag"
+	"fmt"
 	"github.com/paalka/ewok/config"
 	"github.com/paalka/ewok/db"
 	"github.com/paalka/ewok/feed"
@@ -25,11 +27,13 @@ func makeIndexHandler(config config.Config, templates *template.Template) http.H
 }
 
 func main() {
+	portPtr := flag.Int("port", 8080, "The port to use when running the server")
+	flag.Parse()
 	config := config.LoadJsonConfig("config.json")
 	templates := template.Must(template.ParseFiles("web/templates/index.html"))
 
 	http.HandleFunc("/", makeIndexHandler(config, templates))
-	err := http.ListenAndServe(":8000", nil)
+	err := http.ListenAndServe(fmt.Sprintf(":%d", *portPtr), nil)
 	if err != nil {
 		panic(err)
 	}
