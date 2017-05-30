@@ -11,15 +11,27 @@
 
 <body>
   <div class="main-content container">
-    {{ range . }}
-    <div class="row">
-      <div class="eight columns item">
-        <a class="item-link" href="{{ .Link }}" target="_blank">{{ .Title }}</a>
-        <p class="item-publish-date">{{ .Published }}</p>
-        <p class="item-description">{{ .Description }}</p>
-      </div>
-    </div> <!-- end row -->
-    {{ end }}
+    <div class="eight columns">
+      {{ range .FeedItems }}
+      <div class="row">
+        <div class="item">
+          <a class="item-link" href="{{ .Link }}" target="_blank">{{ .Title }}</a>
+          <p class="item-publish-date">{{ .Published }}</p>
+          <p class="item-description">{{ .Description }}</p>
+        </div>
+      </div> <!-- end row -->
+      {{ end }}
+    </div>
+    <div class="four columns">
+      {{ range .Feeds }}
+      <div class="row">
+        <div class="feed" data-feed-id="{{ .Id }}">
+          <a class="feed-link" href="{{ .Link }}" target="_blank">{{ .Title }}</a>
+          <p class="feed-updated">{{ .Updated }}</p>
+        </div>
+      </div> <!-- end row -->
+      {{ end }}
+    </div>
   </div> <!-- end container -->
 </body>
 </html>

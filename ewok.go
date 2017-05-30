@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/mmcdole/gofeed"
 	"github.com/paalka/ewok/config"
 	"github.com/paalka/ewok/db"
 	"github.com/paalka/ewok/feed"
@@ -22,7 +23,11 @@ func makeIndexHandler(config config.Config, templates *template.Template) http.H
 		db := db.GetDatabaseConnection(config.DB_NAME, config.DB_USER, config.DB_PASS)
 
 		feedItems := feed.GetAllFeedItems(db)
-		renderTemplate(w, templates, "index", feedItems)
+		feeds := feed.GetFeeds(db)
+		renderTemplate(w, templates, "index", struct {
+			FeedItems []gofeed.Item
+			Feeds     []feed.EwokFeed
+		}{feedItems, feeds})
 	}
 }
 
