@@ -13,3 +13,4 @@ Ewok is a minimalistic RSS aggregator.
 4. Build the binaries (i.e. ewok and sync_feeds) with `go build`.
 5. Make `sync_feeds` run periodically.
 6. Setup a reverse proxy that points to ewok.
+7. Add feeds by directly inserting into the db.
