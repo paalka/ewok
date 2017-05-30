@@ -4,8 +4,8 @@ Description=Ewok RSS aggregator
 [Service]
 User=www-data
 Group=www-dev
-Type=notify
 ExecStart=/var/www/ewok/ewok
+WorkingDirectory=/var/www/ewok
 Restart=on-failure
 
 [Install]
