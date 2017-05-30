@@ -28,6 +28,11 @@ body {
 }
 
 .item-publish-date {
+  padding-top: 5px;
   color: #717171;
   margin: 0;
+}
+
+.main-content {
+  padding-top: 35px;
 }
