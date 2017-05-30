@@ -1,0 +1,12 @@
+[Unit]
+Description=Ewok RSS aggregator
+
+[Service]
+User=www-data
+Group=www-dev
+Type=notify
+ExecStart=/var/www/ewok/ewok
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
