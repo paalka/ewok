@@ -15,7 +15,8 @@ CREATE TABLE rss_item (
        link text NOT NULL,
        description text NOT NULL,
 
-       publish_date timestamptz NOT NULL
+       publish_date timestamptz NOT NULL,
+       parent_feed_id serial REFERENCES rss_feed (id)
 );
 
 GRANT USAGE ON SCHEMA rss TO rss;

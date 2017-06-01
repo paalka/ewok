@@ -26,7 +26,7 @@ func fetchNewFeedItems(db *sql.DB, oldFeed feed.EwokFeed, fp *gofeed.Parser, fee
 		fmt.Printf("%s %s", err, oldFeed.Link)
 	} else if newFeed != nil {
 		newItems, newFeedLastUpdated := feed.GetNewItems(db, newFeed, oldFeed)
-		feedDiffsCh <- feed.EwokFeed{&gofeed.Feed{Updated: newFeedLastUpdated, Items: newItems}, oldFeed.Id}
+		feedDiffsCh <- feed.EwokFeed{&gofeed.Feed{Updated: newFeedLastUpdated}, newItems, oldFeed.Id}
 	}
 
 	chFinished <- true

@@ -14,7 +14,7 @@
     <div class="eight columns">
       {{ range .FeedItems }}
       <div class="row">
-        <div class="item">
+        <div class="item" data-parent-feed-id="{{ .ParentFeedId }}">
           <a class="item-link" href="{{ .Link }}" target="_blank">{{ .Title }}</a>
           <p class="item-publish-date">{{ .Published }}</p>
           <p class="item-description">{{ .Description }}</p>

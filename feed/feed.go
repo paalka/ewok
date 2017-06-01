@@ -11,9 +11,15 @@ import (
 const timeLayoutRSS string = time.RFC1123Z
 const timeLayoutPSQL string = time.RFC3339
 
+type EwokItem struct {
+	*gofeed.Item
+	ParentFeedId uint
+}
+
 type EwokFeed struct {
 	*gofeed.Feed
-	Id uint
+	Items []*EwokItem
+	Id    uint
 }
 
 func UpdateFeedFromDiff(db *sql.DB, feedDiff EwokFeed) {
@@ -22,7 +28,7 @@ func UpdateFeedFromDiff(db *sql.DB, feedDiff EwokFeed) {
 		panic(err)
 	}
 
-	ins_stmt, err := db.Prepare("INSERT INTO rss_item (title, description, link, publish_date) VALUES ($1, $2, $3, $4)")
+	ins_stmt, err := db.Prepare("INSERT INTO rss_item (title, description, link, publish_date, parent_feed_id) VALUES ($1, $2, $3, $4, $5)")
 	if err != nil {
 		panic(err)
 	}
@@ -33,7 +39,7 @@ func UpdateFeedFromDiff(db *sql.DB, feedDiff EwokFeed) {
 			panic(err)
 		}
 
-		_, err = tx.Stmt(ins_stmt).Exec(item.Title, strippedText, item.Link, item.Published)
+		_, err = tx.Stmt(ins_stmt).Exec(item.Title, strippedText, item.Link, item.Published, feedDiff.Id)
 		if err != nil {
 			tx.Rollback()
 			panic(err)
@@ -55,17 +61,17 @@ func UpdateFeedFromDiff(db *sql.DB, feedDiff EwokFeed) {
 	tx.Commit()
 }
 
-func GetAllFeedItems(db *sql.DB) []gofeed.Item {
-	rows, err := db.Query("SELECT title, link, description, publish_date FROM rss_item ORDER BY publish_date DESC")
+func GetAllFeedItems(db *sql.DB) []EwokItem {
+	rows, err := db.Query("SELECT title, link, description, publish_date, parent_feed_id FROM rss_item ORDER BY publish_date DESC")
 
 	if err != nil {
 		panic(err)
 	}
 
-	var feedItems []gofeed.Item
+	var feedItems []EwokItem
 	for rows.Next() {
-		var item gofeed.Item
-		err = rows.Scan(&item.Title, &item.Link, &item.Description, &item.Published)
+		item := EwokItem{&gofeed.Item{}, 0}
+		err = rows.Scan(&item.Title, &item.Link, &item.Description, &item.Published, &item.ParentFeedId)
 		if err != nil {
 			panic(err)
 		}
@@ -85,7 +91,8 @@ func GetFeeds(db *sql.DB) []EwokFeed {
 
 	var feeds []EwokFeed
 	for rows.Next() {
-		f := EwokFeed{&gofeed.Feed{}, 0}
+		var tmpItems []*EwokItem
+		f := EwokFeed{&gofeed.Feed{}, tmpItems, 0}
 		err = rows.Scan(&f.Id, &f.Title, &f.Link, &f.Updated)
 		if err != nil {
 			panic(err)
@@ -105,7 +112,7 @@ func ParseTime(timeLayout string, timeString string) time.Time {
 	return t
 }
 
-func GetNewItems(db *sql.DB, newFeed *gofeed.Feed, oldFeed EwokFeed) ([]*gofeed.Item, string) {
+func GetNewItems(db *sql.DB, newFeed *gofeed.Feed, oldFeed EwokFeed) ([]*EwokItem, string) {
 	newFeedLastUpdated := newFeed.Updated
 	if newFeedLastUpdated == "" && len(newFeed.Items) > 0 {
 		newFeedLastUpdated = newFeed.Items[0].Published
@@ -113,12 +120,12 @@ func GetNewItems(db *sql.DB, newFeed *gofeed.Feed, oldFeed EwokFeed) ([]*gofeed.
 	newLastUpdatedTime := ParseTime(timeLayoutRSS, newFeedLastUpdated)
 	oldLastUpdatedTime := ParseTime(timeLayoutPSQL, oldFeed.Updated)
 
-	var newItems []*gofeed.Item
+	var newItems []*EwokItem
 
 	if newLastUpdatedTime.After(oldLastUpdatedTime) {
 		for _, item := range newFeed.Items {
 			if item.PublishedParsed != nil && item.PublishedParsed.After(oldLastUpdatedTime) {
-				newItems = append(newItems, item)
+				newItems = append(newItems, &EwokItem{item, oldFeed.Id})
 			}
 		}
 	}
