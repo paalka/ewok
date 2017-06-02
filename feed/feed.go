@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/jaytaylor/html2text"
 	"github.com/mmcdole/gofeed"
+	"strings"
 	"time"
 )
 
@@ -34,7 +35,17 @@ func UpdateFeedFromDiff(db *sql.DB, feedDiff EwokFeed) {
 	}
 
 	for _, item := range feedDiff.Items {
-		strippedText, err := html2text.FromString(item.Description)
+		var description string
+		if len(item.Description) > 350 {
+			description = item.Description[:350]
+
+		}
+
+		strippedText, err := html2text.FromString(description)
+
+		if !strings.HasSuffix(strippedText, " […]") {
+			strippedText = strippedText + " […]"
+		}
 		if err != nil {
 			panic(err)
 		}
