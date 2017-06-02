@@ -72,6 +72,27 @@ func UpdateFeedFromDiff(db *sql.DB, feedDiff EwokFeed) {
 	tx.Commit()
 }
 
+func GetPaginatedFeeds(db *sql.DB, nItems uint, offset uint) []EwokItem {
+	rows, err := db.Query("SELECT title, link, description, publish_date, parent_feed_id FROM rss_item ORDER BY publish_date DESC OFFSET $1 LIMIT $2", nItems*offset, nItems)
+
+	if err != nil {
+		panic(err)
+	}
+
+	var feedItems []EwokItem
+	for rows.Next() {
+		item := EwokItem{&gofeed.Item{}, 0}
+		err = rows.Scan(&item.Title, &item.Link, &item.Description, &item.Published, &item.ParentFeedId)
+		if err != nil {
+			panic(err)
+		}
+		item.Published = ParseTime(timeLayoutPSQL, item.Published).Format(time.RFC1123)
+		feedItems = append(feedItems, item)
+	}
+
+	return feedItems
+}
+
 func GetAllFeedItems(db *sql.DB) []EwokItem {
 	rows, err := db.Query("SELECT title, link, description, publish_date, parent_feed_id FROM rss_item ORDER BY publish_date DESC")
 
