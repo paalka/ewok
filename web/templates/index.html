@@ -12,14 +12,20 @@
 <body>
   <div class="main-content container">
     <div class="eight columns">
-      {{ range .FeedItems }}
-      <div class="row">
-        <div class="item" data-parent-feed-id="{{ .ParentFeedId }}">
-          <a class="item-link" href="{{ .Link }}" target="_blank">{{ .Title }}</a>
-          <p class="item-publish-date">{{ .Published }}</p>
-          <p class="item-description">{{ .Description }}</p>
-        </div>
-      </div> <!-- end row -->
+      {{ if ne (len .FeedItems) 0 }}
+        {{ range .FeedItems }}
+        <div class="row">
+          <div class="item" data-parent-feed-id="{{ .ParentFeedId }}">
+            <a class="item-link" href="{{ .Link }}" target="_blank">{{ .Title }}</a>
+            <p class="item-publish-date">{{ .Published }}</p>
+            <p class="item-description">{{ .Description }}</p>
+          </div>
+        </div> <!-- end row -->
+        {{ end }}
+      {{ else }}
+        <div class="row">
+          <h3> No items found! </h3>
+        </div> <!-- end row -->
       {{ end }}
     </div>
     <div class="four columns">
