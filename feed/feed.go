@@ -9,8 +9,8 @@ import (
 	"time"
 )
 
-const timeLayoutRSS string = time.RFC1123Z
-const timeLayoutPSQL string = time.RFC3339
+const TimeLayoutRSS string = time.RFC1123Z
+const TimeLayoutPSQL string = time.RFC3339
 
 type EwokItem struct {
 	*gofeed.Item
@@ -86,7 +86,7 @@ func GetPaginatedFeeds(db *sql.DB, nItems uint, offset uint) []EwokItem {
 		if err != nil {
 			panic(err)
 		}
-		item.Published = ParseTime(timeLayoutPSQL, item.Published).Format(time.RFC1123)
+		item.Published = ParseTime(TimeLayoutPSQL, item.Published).Format(time.RFC1123)
 		feedItems = append(feedItems, item)
 	}
 
@@ -107,7 +107,7 @@ func GetAllFeedItems(db *sql.DB) []EwokItem {
 		if err != nil {
 			panic(err)
 		}
-		item.Published = ParseTime(timeLayoutPSQL, item.Published).Format(time.RFC1123)
+		item.Published = ParseTime(TimeLayoutPSQL, item.Published).Format(time.RFC1123)
 		feedItems = append(feedItems, item)
 	}
 
@@ -149,8 +149,8 @@ func GetNewItems(db *sql.DB, newFeed *gofeed.Feed, oldFeed EwokFeed) ([]*EwokIte
 	if newFeedLastUpdated == "" && len(newFeed.Items) > 0 {
 		newFeedLastUpdated = newFeed.Items[0].Published
 	}
-	newLastUpdatedTime := ParseTime(timeLayoutRSS, newFeedLastUpdated)
-	oldLastUpdatedTime := ParseTime(timeLayoutPSQL, oldFeed.Updated)
+	newLastUpdatedTime := ParseTime(TimeLayoutRSS, newFeedLastUpdated)
+	oldLastUpdatedTime := ParseTime(TimeLayoutPSQL, oldFeed.Updated)
 
 	var newItems []*EwokItem
 

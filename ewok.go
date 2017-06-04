@@ -9,6 +9,7 @@ import (
 	"html/template"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 const (
@@ -28,6 +29,9 @@ func makeIndexHandler(config config.Config, templates *template.Template) http.H
 
 		feedItems := feed.GetAllFeedItems(db)
 		feeds := feed.GetFeeds(db)
+		for _, f := range feeds {
+			f.Updated = feed.ParseTime(feed.TimeLayoutPSQL, f.Updated).Format(time.RFC1123)
+		}
 		renderTemplate(w, templates, "index", struct {
 			FeedItems []feed.EwokItem
 			Feeds     []feed.EwokFeed
@@ -53,6 +57,9 @@ func makePageHandler(config config.Config, templates *template.Template) http.Ha
 		}
 		feedItems := feed.GetPaginatedFeeds(db, ITEMS_PER_PAGE, uint(index))
 		feeds := feed.GetFeeds(db)
+		for _, f := range feeds {
+			f.Updated = feed.ParseTime(feed.TimeLayoutPSQL, f.Updated).Format(time.RFC1123)
+		}
 		renderTemplate(w, templates, "index", struct {
 			FeedItems []feed.EwokItem
 			Feeds     []feed.EwokFeed
