@@ -35,9 +35,9 @@ func UpdateFeedFromDiff(db *sql.DB, feedDiff EwokFeed) {
 	}
 
 	for _, item := range feedDiff.Items {
-		var description string
-		if len(item.Description) > 350 {
-			description = item.Description[:350]
+		description := item.Description
+		if len(description) > 350 {
+			description = description[:350]
 
 		}
 
