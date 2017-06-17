@@ -18,9 +18,9 @@ a {
 }
 
 .item, .feed {
-  margin-top: 15px;
   padding: 25px;
   background-color: #f7f7f7;
+  margin-bottom: 20px;
 }
 
 .item-link:hover div, .feed-link:hover div {
