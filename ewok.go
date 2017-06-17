@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"flag"
 	"fmt"
 	"github.com/paalka/ewok/config"
@@ -25,10 +26,8 @@ func renderTemplate(w http.ResponseWriter, templates *template.Template, tmpl_na
 	}
 }
 
-func makeIndexHandler(config config.Config, templates *template.Template) http.HandlerFunc {
+func makeIndexHandler(config config.Config, templates *template.Template, db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		db := db.GetDatabaseConnection(config.DB_NAME, config.DB_USER, config.DB_PASS)
-
 		feedItems, err := feed.GetAllFeedItems(db)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -50,10 +49,9 @@ func makeIndexHandler(config config.Config, templates *template.Template) http.H
 	}
 }
 
-func makePageHandler(config config.Config, templates *template.Template) http.HandlerFunc {
+func makePageHandler(config config.Config, templates *template.Template, db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		possibleIndex := chi.URLParam(r, "paginationIndex")
-		db := db.GetDatabaseConnection(config.DB_NAME, config.DB_USER, config.DB_PASS)
 
 		if _, err := strconv.Atoi(possibleIndex); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -103,9 +101,11 @@ func main() {
 	baseRouter.Use(middleware.CloseNotify)
 	baseRouter.Use(middleware.Timeout(60 * time.Second))
 
-	baseRouter.Get("/page/:paginationIndex", makePageHandler(config, templates))
-	baseRouter.Get("/", makeIndexHandler(config, templates))
+	db := db.GetDatabaseConnection(config.DB_NAME, config.DB_USER, config.DB_PASS)
+	baseRouter.Get("/page/:paginationIndex", makePageHandler(config, templates, db))
+	baseRouter.Get("/", makeIndexHandler(config, templates, db))
 	baseRouter.FileServer("/static/", http.Dir("web/static"))
+
 	err := http.ListenAndServe(fmt.Sprintf(":%d", *portPtr), baseRouter)
 	if err != nil {
 		panic(err)
