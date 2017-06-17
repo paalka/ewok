@@ -29,8 +29,17 @@ func makeIndexHandler(config config.Config, templates *template.Template) http.H
 	return func(w http.ResponseWriter, r *http.Request) {
 		db := db.GetDatabaseConnection(config.DB_NAME, config.DB_USER, config.DB_PASS)
 
-		feedItems := feed.GetAllFeedItems(db)
-		feeds := feed.GetFeeds(db)
+		feedItems, err := feed.GetAllFeedItems(db)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		feeds, err := feed.GetFeeds(db)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 		for _, f := range feeds {
 			f.Updated = feed.ParseTime(feed.TimeLayoutPSQL, f.Updated).Format(time.RFC1123)
 		}
@@ -47,7 +56,7 @@ func makePageHandler(config config.Config, templates *template.Template) http.Ha
 		db := db.GetDatabaseConnection(config.DB_NAME, config.DB_USER, config.DB_PASS)
 
 		if _, err := strconv.Atoi(possibleIndex); err != nil {
-			http.Error(w, "Page not found!", http.StatusNotFound)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
@@ -57,8 +66,19 @@ func makePageHandler(config config.Config, templates *template.Template) http.Ha
 			http.Error(w, "Page not found!", http.StatusNotFound)
 			return
 		}
-		feedItems := feed.GetPaginatedFeeds(db, ITEMS_PER_PAGE, uint(index))
-		feeds := feed.GetFeeds(db)
+
+		feedItems, err := feed.GetPaginatedFeeds(db, ITEMS_PER_PAGE, uint(index))
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		feeds, err := feed.GetFeeds(db)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
 		for _, f := range feeds {
 			f.Updated = feed.ParseTime(feed.TimeLayoutPSQL, f.Updated).Format(time.RFC1123)
 		}

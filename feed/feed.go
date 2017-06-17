@@ -23,15 +23,15 @@ type EwokFeed struct {
 	Id    uint
 }
 
-func UpdateFeedFromDiff(db *sql.DB, feedDiff EwokFeed) {
+func UpdateFeedFromDiff(db *sql.DB, feedDiff EwokFeed) error {
 	tx, err := db.Begin()
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	ins_stmt, err := db.Prepare("INSERT INTO rss_item (title, description, link, publish_date, parent_feed_id) VALUES ($1, $2, $3, $4, $5)")
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	for _, item := range feedDiff.Items {
@@ -47,36 +47,37 @@ func UpdateFeedFromDiff(db *sql.DB, feedDiff EwokFeed) {
 			strippedText = strippedText + " […]"
 		}
 		if err != nil {
-			panic(err)
+			return err
 		}
 
 		_, err = tx.Stmt(ins_stmt).Exec(item.Title, strippedText, item.Link, item.Published, feedDiff.Id)
 		if err != nil {
 			tx.Rollback()
-			panic(err)
+			return err
 		}
 	}
 
 	update_feed_stmt, err := db.Prepare("UPDATE rss_feed SET last_updated = $1 WHERE id = $2")
 	if err != nil {
 		tx.Rollback()
-		panic(err)
+		return err
 	}
 
 	_, err = tx.Stmt(update_feed_stmt).Exec(feedDiff.Updated, feedDiff.Id)
 	if err != nil {
 		tx.Rollback()
-		panic(err)
+		return err
 	}
 
 	tx.Commit()
+	return nil
 }
 
-func GetPaginatedFeeds(db *sql.DB, nItems uint, offset uint) []EwokItem {
+func GetPaginatedFeeds(db *sql.DB, nItems uint, offset uint) ([]EwokItem, error) {
 	rows, err := db.Query("SELECT title, link, description, publish_date, parent_feed_id FROM rss_item ORDER BY publish_date DESC OFFSET $1 LIMIT $2", nItems*offset, nItems)
 
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	var feedItems []EwokItem
@@ -84,20 +85,20 @@ func GetPaginatedFeeds(db *sql.DB, nItems uint, offset uint) []EwokItem {
 		item := EwokItem{&gofeed.Item{}, 0}
 		err = rows.Scan(&item.Title, &item.Link, &item.Description, &item.Published, &item.ParentFeedId)
 		if err != nil {
-			panic(err)
+			return nil, err
 		}
 		item.Published = ParseTime(TimeLayoutPSQL, item.Published).Format(time.RFC1123)
 		feedItems = append(feedItems, item)
 	}
 
-	return feedItems
+	return feedItems, nil
 }
 
-func GetAllFeedItems(db *sql.DB) []EwokItem {
+func GetAllFeedItems(db *sql.DB) ([]EwokItem, error) {
 	rows, err := db.Query("SELECT title, link, description, publish_date, parent_feed_id FROM rss_item ORDER BY publish_date DESC")
 
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	var feedItems []EwokItem
@@ -105,20 +106,20 @@ func GetAllFeedItems(db *sql.DB) []EwokItem {
 		item := EwokItem{&gofeed.Item{}, 0}
 		err = rows.Scan(&item.Title, &item.Link, &item.Description, &item.Published, &item.ParentFeedId)
 		if err != nil {
-			panic(err)
+			return nil, err
 		}
 		item.Published = ParseTime(TimeLayoutPSQL, item.Published).Format(time.RFC1123)
 		feedItems = append(feedItems, item)
 	}
 
-	return feedItems
+	return feedItems, nil
 }
 
-func GetFeeds(db *sql.DB) []EwokFeed {
+func GetFeeds(db *sql.DB) ([]EwokFeed, error) {
 	rows, err := db.Query("SELECT id, title, url, last_updated FROM rss_feed")
 
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	var feeds []EwokFeed
@@ -127,12 +128,12 @@ func GetFeeds(db *sql.DB) []EwokFeed {
 		f := EwokFeed{&gofeed.Feed{}, tmpItems, 0}
 		err = rows.Scan(&f.Id, &f.Title, &f.Link, &f.Updated)
 		if err != nil {
-			panic(err)
+			return nil, err
 		}
 		feeds = append(feeds, f)
 	}
 
-	return feeds
+	return feeds, nil
 }
 
 func ParseTime(timeLayout string, timeString string) time.Time {
