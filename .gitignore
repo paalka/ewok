@@ -2,3 +2,4 @@ ewok
 sync_feeds
 config.json
 *.sw*
+vendor/
