@@ -1,34 +1,50 @@
 body {
   font-samily: Times, serif;
+  background-color: #fff;
+  color: #262626;
+}
+
+a, p {
+  text-decoration: none;
+  color: #262626;
+}
+
+a {
+  font-family: Helvetica, arial, sans-serif;
 }
 
 .item-publish-date {
   font-size: 11px;
 }
 
-.item {
-  padding-bottom: 35px;
+.item, .feed {
+  margin-top: 15px;
+  padding: 25px;
+  background-color: #f7f7f7;
 }
 
-.item-link {
-  font-samily: Arial, sans-serif;
-  font-size: 20px;
-  text-decoration: none;
-  color: #097558
+.item-link:hover div, .feed-link:hover div {
+  opacity: 0.75;
 }
 
-.item-link:hover {
-  color: #212121;
+.item-title {
+  color: #262626;
+  font-family: Helvetica, arial, sans-serif;
+  font-size: 24px;
+  margin: 0;
 }
 
 .item-description {
-  font-size: 14px;
-  color: #4c4c4c;
+  font-size: 13px;
+  color: #262626;
   margin-top: 5px;
+  font-family: serif;
 }
 
 .item-publish-date, .feed-updated {
   padding-top: 5px;
+  font-family: Helvetica, arial, sans-serif;
+  padding-bottom: 15px;
   color: #717171;
   margin: 0;
 }
@@ -45,9 +61,10 @@ body {
   padding-bottom: 20px;
 }
 
-.feed-link {
+.feed-title {
   font-samily: Arial, sans-serif;
+  margin: 0;
   font-size: 14px;
   text-decoration: none;
-  color: #097558
+  color: #262626;
 }
