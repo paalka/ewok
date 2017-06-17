@@ -6,6 +6,8 @@ import (
 	"github.com/paalka/ewok/config"
 	"github.com/paalka/ewok/db"
 	"github.com/paalka/ewok/feed"
+	"github.com/pressly/chi"
+	"github.com/pressly/chi/middleware"
 	"html/template"
 	"net/http"
 	"strconv"
@@ -41,8 +43,8 @@ func makeIndexHandler(config config.Config, templates *template.Template) http.H
 
 func makePageHandler(config config.Config, templates *template.Template) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		possibleIndex := chi.URLParam(r, "paginationIndex")
 		db := db.GetDatabaseConnection(config.DB_NAME, config.DB_USER, config.DB_PASS)
-		possibleIndex := r.URL.Path[(len("/page/")):]
 
 		if _, err := strconv.Atoi(possibleIndex); err != nil {
 			http.Error(w, "Page not found!", http.StatusNotFound)
@@ -72,10 +74,19 @@ func main() {
 	flag.Parse()
 	config := config.LoadJsonConfig("config.json")
 	templates := template.Must(template.ParseFiles("web/templates/index.html"))
+	baseRouter := chi.NewRouter()
 
-	http.HandleFunc("/page/", makePageHandler(config, templates))
-	http.HandleFunc("/", makeIndexHandler(config, templates))
-	err := http.ListenAndServe(fmt.Sprintf(":%d", *portPtr), nil)
+	baseRouter.Use(middleware.RequestID)
+	baseRouter.Use(middleware.RealIP)
+	baseRouter.Use(middleware.Logger)
+	baseRouter.Use(middleware.Recoverer)
+	baseRouter.Use(middleware.CloseNotify)
+	baseRouter.Use(middleware.Timeout(60 * time.Second))
+
+	baseRouter.Get("/page/:paginationIndex", makePageHandler(config, templates))
+	baseRouter.Get("/", makeIndexHandler(config, templates))
+	baseRouter.FileServer("/static/", http.Dir("web/static"))
+	err := http.ListenAndServe(fmt.Sprintf(":%d", *portPtr), baseRouter)
 	if err != nil {
 		panic(err)
 	}
