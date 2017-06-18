@@ -42,11 +42,14 @@ a {
 }
 
 .item-publish-date, .feed-updated {
-  padding-top: 5px;
   font-family: Helvetica, arial, sans-serif;
-  padding-bottom: 15px;
+  padding-bottom: 10px;
   color: #717171;
   margin: 0;
+}
+
+.feed-updated {
+  padding-bottom: 0;
 }
 
 .feed-updated {
