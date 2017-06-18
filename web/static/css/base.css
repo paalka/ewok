@@ -30,7 +30,8 @@ a {
 .item-title {
   color: #262626;
   font-family: Helvetica, arial, sans-serif;
-  font-size: 24px;
+  font-weight: 300;
+  font-size: 26px;
   margin: 0;
 }
 
@@ -66,6 +67,7 @@ a {
 
 .feed-title {
   font-samily: Arial, sans-serif;
+  font-weight: 300;
   margin: 0;
   font-size: 14px;
   text-decoration: none;
