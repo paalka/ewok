@@ -40,7 +40,7 @@ func makeIndexHandler(config config.Config, templates *template.Template, db *sq
 			return
 		}
 		for _, f := range feeds {
-			f.Updated = feed.ParseTime(feed.TimeLayoutPSQL, f.Updated).Format(time.RFC1123)
+			f.Updated = feed.ParseTime(feed.TimeLayout, f.Updated).Format(time.RFC1123)
 		}
 		renderTemplate(w, templates, "index", struct {
 			FeedItems []feed.EwokItem
@@ -78,7 +78,7 @@ func makePageHandler(config config.Config, templates *template.Template, db *sql
 		}
 
 		for _, f := range feeds {
-			f.Updated = feed.ParseTime(feed.TimeLayoutPSQL, f.Updated).Format(time.RFC1123)
+			f.Updated = feed.ParseTime(feed.TimeLayout, f.Updated).Format(time.RFC1123)
 		}
 		renderTemplate(w, templates, "index", struct {
 			FeedItems []feed.EwokItem

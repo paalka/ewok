@@ -13,7 +13,10 @@ func main() {
 	config := config.LoadJsonConfig("../config.json")
 	db := db.GetDatabaseConnection(config.DB_NAME, config.DB_USER, config.DB_PASS)
 
-	feeds := feed.GetFeeds(db)
+	feeds, err := feed.GetFeeds(db)
+	if err != nil {
+		panic(err)
+	}
 	syncFeeds(db, feeds)
 }
 
@@ -23,10 +26,10 @@ func fetchNewFeedItems(db *sql.DB, oldFeed feed.EwokFeed, fp *gofeed.Parser, fee
 	if err != nil {
 		// Just show the error and return if we for some reason was not able
 		// to fetch the feed.
-		fmt.Printf("%s %s", err, oldFeed.Link)
+		fmt.Printf("%s %s\n", err, oldFeed.Link)
 	} else if newFeed != nil {
 		newItems, newFeedLastUpdated := feed.GetNewItems(db, newFeed, oldFeed)
-		feedDiffsCh <- feed.EwokFeed{&gofeed.Feed{Updated: newFeedLastUpdated}, newItems, oldFeed.Id}
+		feedDiffsCh <- feed.EwokFeed{Feed: &gofeed.Feed{Updated: newFeedLastUpdated}, Items: newItems, Id: oldFeed.Id}
 	}
 
 	chFinished <- true

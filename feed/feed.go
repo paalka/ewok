@@ -3,14 +3,14 @@ package feed
 import (
 	"database/sql"
 	"fmt"
+	"github.com/bcampbell/fuzzytime"
 	"github.com/jaytaylor/html2text"
 	"github.com/mmcdole/gofeed"
 	"strings"
 	"time"
 )
 
-const TimeLayoutRSS string = time.RFC1123Z
-const TimeLayoutPSQL string = time.RFC3339
+const TimeLayout string = time.RFC3339
 
 type EwokItem struct {
 	*gofeed.Item
@@ -87,7 +87,7 @@ func GetPaginatedFeeds(db *sql.DB, nItems uint, offset uint) ([]EwokItem, error)
 		if err != nil {
 			return nil, err
 		}
-		item.Published = ParseTime(TimeLayoutPSQL, item.Published).Format(time.RFC1123)
+		item.Published = ParseTime(TimeLayout, item.Published).Format(time.RFC1123)
 		feedItems = append(feedItems, item)
 	}
 
@@ -108,7 +108,7 @@ func GetAllFeedItems(db *sql.DB) ([]EwokItem, error) {
 		if err != nil {
 			return nil, err
 		}
-		item.Published = ParseTime(TimeLayoutPSQL, item.Published).Format(time.RFC1123)
+		item.Published = ParseTime(TimeLayout, item.Published).Format(time.RFC1123)
 		feedItems = append(feedItems, item)
 	}
 
@@ -141,7 +141,6 @@ func ParseTime(timeLayout string, timeString string) time.Time {
 	if err != nil {
 		fmt.Println(err)
 	}
-
 	return t
 }
 
@@ -150,8 +149,13 @@ func GetNewItems(db *sql.DB, newFeed *gofeed.Feed, oldFeed EwokFeed) ([]*EwokIte
 	if newFeedLastUpdated == "" && len(newFeed.Items) > 0 {
 		newFeedLastUpdated = newFeed.Items[0].Published
 	}
-	newLastUpdatedTime := ParseTime(TimeLayoutRSS, newFeedLastUpdated)
-	oldLastUpdatedTime := ParseTime(TimeLayoutPSQL, oldFeed.Updated)
+
+	newFeedLastUpdatedDT, _, err := fuzzytime.Extract(newFeedLastUpdated)
+	if err != nil {
+		fmt.Println(err)
+	}
+	newLastUpdatedTime := ParseTime(TimeLayout, newFeedLastUpdatedDT.ISOFormat())
+	oldLastUpdatedTime := ParseTime(TimeLayout, oldFeed.Updated)
 
 	var newItems []*EwokItem
 
