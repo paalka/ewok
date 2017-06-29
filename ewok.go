@@ -12,6 +12,7 @@ import (
 	"html/template"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -87,6 +88,24 @@ func makePageHandler(config config.Config, templates *template.Template, db *sql
 	}
 }
 
+func FileServer(r chi.Router, path string, root http.FileSystem) {
+	if strings.ContainsAny(path, "{}*") {
+		panic("FileServer does not permit URL parameters.")
+	}
+
+	fs := http.StripPrefix(path, http.FileServer(root))
+
+	if path != "/" && path[len(path)-1] != '/' {
+		r.Get(path, http.RedirectHandler(path+"/", 301).ServeHTTP)
+		path += "/"
+	}
+	path += "*"
+
+	r.Get(path, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fs.ServeHTTP(w, r)
+	}))
+}
+
 func main() {
 	portPtr := flag.Int("port", 8080, "The port to use when running the server")
 	flag.Parse()
@@ -104,7 +123,8 @@ func main() {
 	db := db.GetDatabaseConnection(config.DB_NAME, config.DB_USER, config.DB_PASS)
 	baseRouter.Get("/page/:paginationIndex", makePageHandler(config, templates, db))
 	baseRouter.Get("/", makeIndexHandler(config, templates, db))
-	baseRouter.FileServer("/static/", http.Dir("web/static"))
+
+	FileServer(baseRouter, "/static/", http.Dir("web/static"))
 
 	err := http.ListenAndServe(fmt.Sprintf(":%d", *portPtr), baseRouter)
 	if err != nil {
