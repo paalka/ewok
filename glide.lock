@@ -1,10 +1,14 @@
-hash: a62cad96ecf2126bf6b7c2d73d535daf4f682b585b8c77bf9d0918dd6aff89f4
-updated: 2017-06-29T22:31:39.464079356+02:00
+hash: b3eab4b756945cbd8b52cb2ebff16b44372926823f4cbf8d1c25c1808dae480f
+updated: 2017-06-30T18:03:40.246387458+02:00
 imports:
 - name: github.com/andybalholm/cascadia
   version: 349dd0209470eabd9514242c688c403c0926d266
 - name: github.com/bcampbell/fuzzytime
   version: 6a03581b01a2b1647d35ccf849090b5036108e0c
+- name: github.com/go-chi/chi
+  version: e6033ea75479391a4bce3918fc119cad31e1cb30
+  subpackages:
+  - middleware
 - name: github.com/jaytaylor/html2text
   version: 7c7a33a7a158a5ce395c803d2b6a209b2bbc14c8
 - name: github.com/lib/pq
@@ -26,10 +30,10 @@ imports:
   version: febf2d34b54a69ce7530036c7503b1c9fbfdf0bb
 - name: github.com/pressly/chi
   version: e6033ea75479391a4bce3918fc119cad31e1cb30
-  subpackages:
-  - middleware
 - name: github.com/PuerkitoBio/goquery
   version: 8806ada2a4ab225c06e9106f9631be80932db7ce
+- name: github.com/Sirupsen/logrus
+  version: 202f25545ea4cf9b191ff7f846df5d87c9382c2b
 - name: github.com/ssor/bom
   version: 6ed919a936d5ab554e4b40bc51f7c522488122c6
 - name: golang.org/x/net
@@ -38,6 +42,10 @@ imports:
   - html
   - html/atom
   - html/charset
+- name: golang.org/x/sys
+  version: 9ccfe848b9db8435a24c424abbc07a921adf1df5
+  subpackages:
+  - unix
 - name: golang.org/x/text
   version: 2910a502d2bf9e43193af9d68ca516529614eed3
   subpackages:

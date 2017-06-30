@@ -4,9 +4,9 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/mmcdole/gofeed"
-	"github.com/paalka/ewok/config"
-	"github.com/paalka/ewok/db"
-	"github.com/paalka/ewok/feed"
+	"github.com/paalka/ewok/pkg/config"
+	"github.com/paalka/ewok/pkg/db"
+	"github.com/paalka/ewok/pkg/feed"
 )
 
 func main() {

@@ -4,16 +4,19 @@ import (
 	"database/sql"
 	"flag"
 	"fmt"
-	"github.com/paalka/ewok/config"
-	"github.com/paalka/ewok/db"
-	"github.com/paalka/ewok/feed"
-	"github.com/pressly/chi"
-	"github.com/pressly/chi/middleware"
 	"html/template"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
+
+	"github.com/paalka/ewok/pkg/config"
+	"github.com/paalka/ewok/pkg/db"
+	"github.com/paalka/ewok/pkg/feed"
+	"github.com/paalka/ewok/pkg/logger"
 )
 
 const (
@@ -115,7 +118,7 @@ func main() {
 
 	baseRouter.Use(middleware.RequestID)
 	baseRouter.Use(middleware.RealIP)
-	baseRouter.Use(middleware.Logger)
+	baseRouter.Use(logger.RequestLogger)
 	baseRouter.Use(middleware.Recoverer)
 	baseRouter.Use(middleware.CloseNotify)
 	baseRouter.Use(middleware.Timeout(60 * time.Second))

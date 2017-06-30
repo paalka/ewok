@@ -4,7 +4,7 @@ import:
 - package: github.com/lib/pq
 - package: github.com/mmcdole/gofeed
   version: ^1.0.0-beta
-- package: github.com/pressly/chi
+- package: github.com/go-chi/chi
   version: ^2.1.0
   subpackages:
   - middleware
