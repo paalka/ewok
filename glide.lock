@@ -1,12 +1,12 @@
-hash: b3eab4b756945cbd8b52cb2ebff16b44372926823f4cbf8d1c25c1808dae480f
-updated: 2017-06-30T22:31:07.092879032+02:00
+hash: 8135fe4321002073223fdc46dee3d506f2a70aecb5aa56de2708e1060bcfce46
+updated: 2017-06-30T23:07:10.79014494+02:00
 imports:
 - name: github.com/andybalholm/cascadia
   version: 349dd0209470eabd9514242c688c403c0926d266
 - name: github.com/bcampbell/fuzzytime
   version: 6a03581b01a2b1647d35ccf849090b5036108e0c
 - name: github.com/go-chi/chi
-  version: e6033ea75479391a4bce3918fc119cad31e1cb30
+  version: 967844826e58cf31213a7dfb82455d242ad85101
   subpackages:
   - middleware
 - name: github.com/jaytaylor/html2text
@@ -28,8 +28,6 @@ imports:
   version: e38884aa48c1952a416ba35f3c276e4f02f9b40e
 - name: github.com/olekukonko/tablewriter
   version: febf2d34b54a69ce7530036c7503b1c9fbfdf0bb
-- name: github.com/pressly/chi
-  version: e6033ea75479391a4bce3918fc119cad31e1cb30
 - name: github.com/PuerkitoBio/goquery
   version: 8806ada2a4ab225c06e9106f9631be80932db7ce
 - name: github.com/ssor/bom
