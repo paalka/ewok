@@ -35,6 +35,14 @@ a {
   margin: 0;
 }
 
+.item-parent-name {
+  color: #717171;
+  font-family: Helvetica, arial, sans-serif;
+  font-weight: 300;
+  margin: 0;
+  font-size: 12px;
+}
+
 .item-description {
   font-size: 13px;
   color: #262626;

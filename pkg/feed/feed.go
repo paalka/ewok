@@ -14,7 +14,8 @@ const TimeLayout string = time.RFC3339
 
 type EwokItem struct {
 	*gofeed.Item
-	ParentFeedId uint
+	ParentFeedId   uint
+	ParentFeedName string
 }
 
 type EwokFeed struct {
@@ -82,8 +83,8 @@ func GetPaginatedFeeds(db *sql.DB, nItems uint, offset uint) ([]EwokItem, error)
 
 	var feedItems []EwokItem
 	for rows.Next() {
-		item := EwokItem{&gofeed.Item{}, 0}
-		err = rows.Scan(&item.Title, &item.Link, &item.Description, &item.Published, &item.ParentFeedId)
+		item := EwokItem{&gofeed.Item{}, 0, ""}
+		err = rows.Scan(&item.Title, &item.Link, &item.Description, &item.Published, &item.ParentFeedId, &item.ParentFeedName)
 		if err != nil {
 			return nil, err
 		}
@@ -95,7 +96,7 @@ func GetPaginatedFeeds(db *sql.DB, nItems uint, offset uint) ([]EwokItem, error)
 }
 
 func GetAllFeedItems(db *sql.DB) ([]EwokItem, error) {
-	rows, err := db.Query("SELECT title, link, description, publish_date, parent_feed_id FROM rss_item ORDER BY publish_date DESC")
+	rows, err := db.Query("SELECT rss_item.title, link, description, publish_date, parent_feed_id, rss_feed.title FROM rss_item JOIN rss_feed ON rss_feed.id = rss_item.parent_feed_id ORDER BY publish_date DESC")
 
 	if err != nil {
 		return nil, err
@@ -103,8 +104,8 @@ func GetAllFeedItems(db *sql.DB) ([]EwokItem, error) {
 
 	var feedItems []EwokItem
 	for rows.Next() {
-		item := EwokItem{&gofeed.Item{}, 0}
-		err = rows.Scan(&item.Title, &item.Link, &item.Description, &item.Published, &item.ParentFeedId)
+		item := EwokItem{&gofeed.Item{}, 0, ""}
+		err = rows.Scan(&item.Title, &item.Link, &item.Description, &item.Published, &item.ParentFeedId, &item.ParentFeedName)
 		if err != nil {
 			return nil, err
 		}
@@ -162,7 +163,7 @@ func GetNewItems(db *sql.DB, newFeed *gofeed.Feed, oldFeed EwokFeed) ([]*EwokIte
 	if newLastUpdatedTime.After(oldLastUpdatedTime) {
 		for _, item := range newFeed.Items {
 			if item.PublishedParsed != nil && item.PublishedParsed.After(oldLastUpdatedTime) {
-				newItems = append(newItems, &EwokItem{item, oldFeed.Id})
+				newItems = append(newItems, &EwokItem{item, oldFeed.Id, oldFeed.Title})
 			}
 		}
 	}
