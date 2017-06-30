@@ -15,14 +15,14 @@
       {{ if ne (len .FeedItems) 0 }}
         {{ range .FeedItems }}
         <div class="row">
-            <div class="item" data-parent-feed-id="{{ .ParentFeedId }}">
-              <a class="item-link" href="{{ .Link }}" target="_blank">
-                <p class="item-parent-name detail-text">{{ .ParentFeedName }}</p>
-                <h3 class="item-title">{{ .Title }}</h3>
-                <p class="item-publish-date detail-text">{{ .Published }}</p>
-                <p class="item-description">{{ .Description }}</p>
-              </a>
-            </div>
+            <a class="item-link" href="{{ .Link }}" target="_blank">
+              <div class="item" data-parent-feed-id="{{ .ParentFeedId }}">
+                  <p class="item-parent-name detail-text">{{ .ParentFeedName }}</p>
+                  <h3 class="item-title">{{ .Title }}</h3>
+                  <p class="item-publish-date detail-text">{{ .Published }}</p>
+                  <p class="item-description">{{ .Description }}</p>
+              </div>
+            </a>
         </div> <!-- end row -->
         {{ end }}
       {{ else }}
