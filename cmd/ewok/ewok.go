@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"html/template"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -16,7 +17,6 @@ import (
 	"github.com/paalka/ewok/pkg/config"
 	"github.com/paalka/ewok/pkg/db"
 	"github.com/paalka/ewok/pkg/feed"
-	"github.com/paalka/ewok/pkg/logger"
 )
 
 const (
@@ -118,7 +118,7 @@ func main() {
 
 	baseRouter.Use(middleware.RequestID)
 	baseRouter.Use(middleware.RealIP)
-	baseRouter.Use(logger.RequestLogger)
+	baseRouter.Use(middleware.Logger)
 	baseRouter.Use(middleware.Recoverer)
 	baseRouter.Use(middleware.CloseNotify)
 	baseRouter.Use(middleware.Timeout(60 * time.Second))
@@ -129,7 +129,9 @@ func main() {
 
 	FileServer(baseRouter, "/static/", http.Dir("web/static"))
 
-	err := http.ListenAndServe(fmt.Sprintf(":%d", *portPtr), baseRouter)
+	port := *portPtr
+	log.Printf("Listening to localhost:%d", port)
+	err := http.ListenAndServe(fmt.Sprintf(":%d", port), baseRouter)
 	if err != nil {
 		panic(err)
 	}
