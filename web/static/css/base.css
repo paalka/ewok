@@ -35,14 +35,6 @@ a {
   margin: 0;
 }
 
-.item-parent-name {
-  color: #717171;
-  font-family: Helvetica, arial, sans-serif;
-  font-weight: 300;
-  margin: 0;
-  font-size: 12px;
-}
-
 .item-description {
   font-size: 13px;
   color: #262626;
@@ -50,11 +42,16 @@ a {
   font-family: serif;
 }
 
-.item-publish-date, .feed-updated {
+.detail-text {
+  padding-top: 3px;
   font-family: Helvetica, arial, sans-serif;
-  padding-bottom: 10px;
   color: #717171;
   margin: 0;
+  font-size: 12px;
+}
+
+.item-parent-name, .feed-updated {
+  padding-bottom: 10px;
 }
 
 .feed-updated {
