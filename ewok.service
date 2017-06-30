@@ -4,7 +4,7 @@ Description=Ewok RSS aggregator
 [Service]
 User=www-data
 Group=www-dev
-ExecStart=/var/www/ewok/ewok
+ExecStart=/var/www/ewok/bin/ewok
 WorkingDirectory=/var/www/ewok
 Restart=on-failure
 
