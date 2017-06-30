@@ -44,13 +44,14 @@ a {
 
 .detail-text {
   padding-top: 3px;
+  padding-bottom: 3px;
   font-family: Helvetica, arial, sans-serif;
   color: #717171;
   margin: 0;
   font-size: 12px;
 }
 
-.item-parent-name, .feed-updated {
+.item-publish-date, .feed-updated {
   padding-bottom: 10px;
 }
 
