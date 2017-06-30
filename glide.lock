@@ -1,5 +1,5 @@
 hash: b3eab4b756945cbd8b52cb2ebff16b44372926823f4cbf8d1c25c1808dae480f
-updated: 2017-06-30T18:03:40.246387458+02:00
+updated: 2017-06-30T22:31:07.092879032+02:00
 imports:
 - name: github.com/andybalholm/cascadia
   version: 349dd0209470eabd9514242c688c403c0926d266
@@ -32,8 +32,6 @@ imports:
   version: e6033ea75479391a4bce3918fc119cad31e1cb30
 - name: github.com/PuerkitoBio/goquery
   version: 8806ada2a4ab225c06e9106f9631be80932db7ce
-- name: github.com/Sirupsen/logrus
-  version: 202f25545ea4cf9b191ff7f846df5d87c9382c2b
 - name: github.com/ssor/bom
   version: 6ed919a936d5ab554e4b40bc51f7c522488122c6
 - name: golang.org/x/net
@@ -42,10 +40,6 @@ imports:
   - html
   - html/atom
   - html/charset
-- name: golang.org/x/sys
-  version: 9ccfe848b9db8435a24c424abbc07a921adf1df5
-  subpackages:
-  - unix
 - name: golang.org/x/text
   version: 2910a502d2bf9e43193af9d68ca516529614eed3
   subpackages:
