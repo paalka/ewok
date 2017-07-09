@@ -15,6 +15,7 @@ a {
 
 .item-publish-date {
   font-size: 11px;
+  padding-bottom: 10px;
 }
 
 .item, .feed {
@@ -51,16 +52,9 @@ a {
   font-size: 12px;
 }
 
-.item-publish-date, .feed-updated {
-  padding-bottom: 10px;
-}
-
-.feed-updated {
-  padding-bottom: 0;
-}
-
 .feed-updated {
   font-size: 11px;
+  padding-bottom: 0;
 }
 
 .main-content {
