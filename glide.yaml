@@ -2,9 +2,8 @@ package: github.com/paalka/ewok
 import:
 - package: github.com/jaytaylor/html2text
 - package: github.com/lib/pq
-- package: github.com/mmcdole/gofeed
-  version: ^1.0.0-beta
 - package: github.com/go-chi/chi
   version: ^3.0.0
   subpackages:
   - middleware
+- package: github.com/mmcdole/gofeed

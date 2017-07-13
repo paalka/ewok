@@ -1,24 +1,24 @@
-hash: 8135fe4321002073223fdc46dee3d506f2a70aecb5aa56de2708e1060bcfce46
-updated: 2017-06-30T23:07:10.79014494+02:00
+hash: c9d1368fe08747d8af32b91a3aa1761f16a1f71c3e9ab6832dc93413e2a2634c
+updated: 2017-07-13T18:52:45.312858286+02:00
 imports:
 - name: github.com/andybalholm/cascadia
   version: 349dd0209470eabd9514242c688c403c0926d266
 - name: github.com/bcampbell/fuzzytime
   version: 6a03581b01a2b1647d35ccf849090b5036108e0c
 - name: github.com/go-chi/chi
-  version: 967844826e58cf31213a7dfb82455d242ad85101
+  version: 08660a0ad10a8fa7beab3ad43afe66373d49d06a
   subpackages:
   - middleware
 - name: github.com/jaytaylor/html2text
   version: 7c7a33a7a158a5ce395c803d2b6a209b2bbc14c8
 - name: github.com/lib/pq
-  version: 8837942c3e09574accbc5f150e2c5e057189cace
+  version: dd1fe2071026ce53f36a39112e645b4d4f5793a4
   subpackages:
   - oid
 - name: github.com/mattn/go-runewidth
-  version: d6bea18f789704b5f83375793155289da36a3c7f
+  version: 97311d9f7767e3d6f422ea06661bc2c7a19e8a5d
 - name: github.com/mmcdole/gofeed
-  version: 303223474e837398b2f8a265e5572958bb5568c0
+  version: 042c0a9121581210fc8ef106d8ad1b0bdf931ae2
   subpackages:
   - atom
   - extensions
@@ -33,13 +33,13 @@ imports:
 - name: github.com/ssor/bom
   version: 6ed919a936d5ab554e4b40bc51f7c522488122c6
 - name: golang.org/x/net
-  version: e90d6d0afc4c315a0d87a568ae68577cc15149a0
+  version: f01ecb60fe3835d80d9a0b7b2bf24b228c89260e
   subpackages:
   - html
   - html/atom
   - html/charset
 - name: golang.org/x/text
-  version: 2910a502d2bf9e43193af9d68ca516529614eed3
+  version: cfdf022e86b4ecfb646e1efbd7db175dd623a8fa
   subpackages:
   - encoding
   - encoding/charmap
