@@ -19,7 +19,7 @@ import (
 )
 
 const (
-	ITEMS_PER_PAGE = 15
+	ITEMS_PER_PAGE = 30 
 )
 
 func renderTemplate(w http.ResponseWriter, templates *template.Template, tmpl_name string, data interface{}) {
