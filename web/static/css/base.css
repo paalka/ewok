@@ -74,3 +74,18 @@ a {
   text-decoration: none;
   color: #262626;
 }
+
+#pages {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+#pages li {
+  margin-right: 10px;
+  display: inline-block;
+}
+
+#current-page {
+  text-decoration: underline;
+}

@@ -6,6 +6,7 @@ import (
 	"github.com/bcampbell/fuzzytime"
 	"github.com/jaytaylor/html2text"
 	"github.com/mmcdole/gofeed"
+	"math"
 	"strings"
 	"time"
 )
@@ -75,7 +76,7 @@ func UpdateFeedFromDiff(db *sql.DB, feedDiff EwokFeed) error {
 }
 
 func GetPaginatedFeeds(db *sql.DB, nItems uint, offset uint) ([]EwokItem, error) {
-	rows, err := db.Query("SELECT title, link, description, publish_date, parent_feed_id FROM rss_item ORDER BY publish_date DESC OFFSET $1 LIMIT $2", nItems*offset, nItems)
+	rows, err := db.Query("SELECT rss_item.title, link, description, publish_date, parent_feed_id, rss_feed.title FROM rss_item JOIN rss_feed ON rss_feed.id = rss_item.parent_feed_id ORDER BY publish_date DESC OFFSET $1 LIMIT $2", nItems*offset, nItems)
 
 	if err != nil {
 		return nil, err
@@ -114,6 +115,20 @@ func GetAllFeedItems(db *sql.DB) ([]EwokItem, error) {
 	}
 
 	return feedItems, nil
+}
+
+func GetNumFeedPages(db *sql.DB, itemsPerPage uint) (*int, error) {
+	row := db.QueryRow("SELECT count(*) FROM rss.rss_item")
+
+	var nItems int
+	err := row.Scan(&nItems)
+	if err != nil {
+		return nil, err
+	}
+
+	nPages := int(math.Ceil(float64(nItems) / float64(itemsPerPage)))
+
+	return &nPages, nil
 }
 
 func GetFeeds(db *sql.DB) ([]EwokFeed, error) {

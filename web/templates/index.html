@@ -30,6 +30,13 @@
           <h3> No items found! </h3>
         </div> <!-- end row -->
       {{ end }}
+      <ul id="pages">
+      {{ range $_, $p_i := .PageIndices }}
+      <li>
+        <a href="/page/{{ $p_i }}" {{ if eq $p_i $.CurrentPage }}id="current-page"{{ end }} >{{ $p_i }}</a>
+      </li>
+      {{ end }}
+      </ul>
     </div>
     <div class="four columns">
       {{ range .Feeds }}

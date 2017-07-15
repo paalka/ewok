@@ -19,7 +19,7 @@ import (
 )
 
 const (
-	ITEMS_PER_PAGE = 10
+	ITEMS_PER_PAGE = 15
 )
 
 func renderTemplate(w http.ResponseWriter, templates *template.Template, tmpl_name string, data interface{}) {
@@ -29,26 +29,50 @@ func renderTemplate(w http.ResponseWriter, templates *template.Template, tmpl_na
 	}
 }
 
+func getPageIndices(db *sql.DB) ([]int, error) {
+	nPages, err := feed.GetNumFeedPages(db, ITEMS_PER_PAGE)
+	if err != nil {
+		return nil, err
+	}
+
+	pageIndices := make([]int, *nPages)
+	for i, _ := range pageIndices {
+		pageIndices[i] = i + 1
+	}
+
+	return pageIndices, nil
+}
+
 func makeIndexHandler(config config.Config, templates *template.Template, db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		feedItems, err := feed.GetAllFeedItems(db)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
 		feeds, err := feed.GetFeeds(db)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+
+		feedItems, err := feed.GetPaginatedFeeds(db, ITEMS_PER_PAGE, 0)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
 		for _, f := range feeds {
 			f.Updated = feed.ParseTime(feed.TimeLayout, f.Updated).Format(time.RFC1123)
 		}
+
+		pageIndices, err := getPageIndices(db)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
 		renderTemplate(w, templates, "index", struct {
-			FeedItems []feed.EwokItem
-			Feeds     []feed.EwokFeed
-		}{feedItems, feeds})
+			FeedItems   []feed.EwokItem
+			Feeds       []feed.EwokFeed
+			PageIndices []int
+			CurrentPage int
+		}{feedItems, feeds, pageIndices, 1})
 	}
 }
 
@@ -61,14 +85,19 @@ func makePageHandler(config config.Config, templates *template.Template, db *sql
 			return
 		}
 
-		index, err := strconv.ParseUint(possibleIndex, 10, 64)
-
+		index, err := strconv.ParseInt(possibleIndex, 10, 64)
 		if err != nil {
 			http.Error(w, "Page not found!", http.StatusNotFound)
 			return
 		}
 
-		feedItems, err := feed.GetPaginatedFeeds(db, ITEMS_PER_PAGE, uint(index))
+		offset := index - 1
+		if offset < 0 {
+			http.Error(w, "Page not found!", http.StatusNotFound)
+			return
+		}
+
+		feedItems, err := feed.GetPaginatedFeeds(db, ITEMS_PER_PAGE, uint(offset))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -83,10 +112,19 @@ func makePageHandler(config config.Config, templates *template.Template, db *sql
 		for _, f := range feeds {
 			f.Updated = feed.ParseTime(feed.TimeLayout, f.Updated).Format(time.RFC1123)
 		}
+
+		pageIndices, err := getPageIndices(db)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
 		renderTemplate(w, templates, "index", struct {
-			FeedItems []feed.EwokItem
-			Feeds     []feed.EwokFeed
-		}{feedItems, feeds})
+			FeedItems   []feed.EwokItem
+			Feeds       []feed.EwokFeed
+			PageIndices []int
+			CurrentPage int
+		}{feedItems, feeds, pageIndices, int(index)})
 	}
 }
 
@@ -105,7 +143,7 @@ func main() {
 	baseRouter.Use(middleware.Timeout(60 * time.Second))
 
 	db := db.GetDatabaseConnection(config.DB_NAME, config.DB_USER, config.DB_PASS)
-	baseRouter.Get("/page/:paginationIndex", makePageHandler(config, templates, db))
+	baseRouter.Get("/page/{paginationIndex}", makePageHandler(config, templates, db))
 	baseRouter.Get("/", makeIndexHandler(config, templates, db))
 
 	FileServer(baseRouter, "/static/", http.Dir("web/static"))
