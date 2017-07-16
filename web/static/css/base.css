@@ -86,6 +86,10 @@ a {
   display: inline-block;
 }
 
+#pages li a:hover {
+  color: #717171
+}
+
 #current-page {
   text-decoration: underline;
 }
