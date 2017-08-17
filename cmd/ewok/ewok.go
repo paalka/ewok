@@ -141,6 +141,7 @@ func main() {
 	baseRouter.Use(middleware.Recoverer)
 	baseRouter.Use(middleware.CloseNotify)
 	baseRouter.Use(middleware.Timeout(60 * time.Second))
+	baseRouter.Use(middleware.DefaultCompress)
 
 	db := db.GetDatabaseConnection(config.DB_NAME, config.DB_USER, config.DB_PASS)
 	baseRouter.Get("/page/{paginationIndex}", makePageHandler(config, templates, db))
