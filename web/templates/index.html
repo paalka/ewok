@@ -11,7 +11,7 @@
 
 <body>
   <div class="main-content container">
-    <div class="eight columns">
+    <div class="nine columns">
       {{ if ne (len .FeedItems) 0 }}
         {{ range .FeedItems }}
         <div class="row">
@@ -38,7 +38,7 @@
       {{ end }}
       </ul>
     </div>
-    <div class="four columns">
+    <div class="three columns">
       {{ range .Feeds }}
       <div class="row">
         <a class="feed-link" href="{{ .Link }}" target="_blank">
